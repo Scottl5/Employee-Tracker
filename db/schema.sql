@@ -1,5 +1,4 @@
 DROP DATABASE IF EXISTS company_db;
-
 CREATE DATABASE company_db;
 
 USE company_db;
@@ -11,6 +10,7 @@ CREATE TABLE department (
 );
 
 
+
 CREATE TABLE role(
     id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
     title VARCHAR(30),
@@ -20,6 +20,7 @@ CREATE TABLE role(
     REFERENCES department(id)
     ON DELETE SET NULL
 );
+
 
 
 CREATE TABLE employee(

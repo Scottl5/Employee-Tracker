@@ -1,5 +1,6 @@
 const inquirer = require("inquirer");
 const mysql = require("mysql2");
+const cTable = require("console.table");
 const db = mysql.createConnection(
   {
     host: "localhost",
@@ -81,7 +82,7 @@ const addEmployeeQuestions = [
   },
   {
     name: "employeeManager",
-    message: "Who is thier manager?",
+    message: "Who is their manager?",
     type: "list",
     choices: [],
   },
@@ -90,13 +91,76 @@ const addEmployeeQuestions = [
 function init() {
   inquirer.prompt(activateQuestion).then((answer) => {
     console.log(answer.activate);
-    if (answer.activate === "View All Departments") {
-      db.query("SELECT * FROM department"),
-        function (err, results) {
-          console.table(results);
-        };
+    if (answer.activate === "Quit") {
+      return;
+      // viewDepartment();
+    } else {
+      activateOther(answer.activate);
     }
   });
 }
 
+function activateOther(answer) {
+  switch (answer) {
+    case "View All Departments":
+      response = viewDepartment();
+      break;
+    case "View All Employees":
+      response = viewEmployees();
+      break;
+    case "View All Roles":
+      response = viewRoles();
+      break;
+    case "Add A Department":
+      response = addDepartment();
+      break;
+    case "Add a Role":
+      response = addRole();
+      break;
+  }
+}
+
+function viewDepartment() {
+  db.query("SELECT * FROM department", function (err, results) {
+    console.table(results);
+    return init();
+  });
+}
+
+function viewEmployees() {
+  db.query("SELECT * FROM employee", function (err, results) {
+    console.table(results);
+    return init();
+  });
+}
+
+function viewRoles() {
+  db.query("SELECT * FROM role", function (err, results) {
+    console.table(results);
+    return init();
+  });
+}
+
+function addDepartment() {
+  inquirer.prompt(addDepartmentQuestions).then((answer) => {
+    db.query(
+      `INSERT INTO department (name) VALUES ("${answer.departmentName}")`,
+      function (err, results) {
+        return init();
+      }
+    );
+    console.log(answer.departmentName);
+  });
+}
+
+function addRole() {
+  inquirer.prompt(addRoleQuestions).then((answer) => {
+    db.query(
+      `INSERT INTO role (title, salary) VALUES ("${answer.roleName}", "${answer.roleSalary}")`,
+      function (err, results) {
+        return init();
+      }
+    );
+  });
+}
 init();
